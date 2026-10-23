@@ -119,11 +119,20 @@ export const products = pgTable(
     name: text("name").notNull(),
     slug: text("slug").notNull().unique(),
     description: text("description"),
+    // Die-cast details shown on the product page.
+    brand: text("brand"),
+    scale: text("scale"),
+    series: text("series"),
+    material: text("material"),
     basePrice: integer("base_price").notNull(),
     compareAtPrice: integer("compare_at_price"),
     hsnCode: text("hsn_code"),
     gstRate: integer("gst_rate").notNull().default(5), // percent
     status: productStatus("status").notNull().default("draft"),
+    // Shown in the home page "Shop Cars" row.
+    isFeatured: boolean("is_featured").notNull().default(false),
+    // Shown in the home page "Trending" grid (ordered by recent sales).
+    isTrending: boolean("is_trending").notNull().default(false),
     ...timestamps,
   },
   (t) => [
@@ -240,6 +249,15 @@ export const wishlist = pgTable(
   },
   (t) => [primaryKey({ columns: [t.userId, t.productId] })],
 );
+
+// ---------- Newsletter ----------
+
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  email: text("email").primaryKey(),
+  // Set when the subscriber also wants WhatsApp drop alerts (10-digit Indian mobile).
+  whatsappPhone: text("whatsapp_phone"),
+  createdAt,
+});
 
 // ---------- Coupons ----------
 

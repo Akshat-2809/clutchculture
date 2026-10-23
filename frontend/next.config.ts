@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
     ],
   },
   partialPrefetching: true,
+  async redirects() {
+    return [{ source: "/signup", destination: "/register", permanent: true }];
+  },
   turbopack: {
     rules: {
       "*.css": {

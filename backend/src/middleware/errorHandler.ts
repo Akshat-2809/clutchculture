@@ -18,6 +18,13 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     return;
   }
 
+  // Postgres unique violation, e.g. a duplicate SKU or collection name.
+  if (err?.code === "23505") {
+    const field = /\((\w+)\)=/.exec(err.detail ?? "")?.[1] ?? "value";
+    res.status(409).json({ error: `That ${field} is already in use` });
+    return;
+  }
+
   console.error(err);
   res.status(500).json({
     error: "Internal server error",

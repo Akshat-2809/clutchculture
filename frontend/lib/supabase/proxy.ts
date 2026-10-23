@@ -2,6 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PROTECTED_PREFIXES = ["/account", "/admin"];
+// Signed-in users skip these. (Not /reset-password — it needs the session.)
+const GUEST_ONLY = ["/login", "/register"];
 
 /**
  * Refreshes the Supabase session cookie on every request and redirects
@@ -39,6 +41,13 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  if (isSignedIn && GUEST_ONLY.includes(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/account";
+    url.search = "";
     return NextResponse.redirect(url);
   }
 

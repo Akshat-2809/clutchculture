@@ -15,6 +15,41 @@
       "when": 1792761170859,
       "tag": "0001_supabase_setup",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792764936668,
+      "tag": "0002_profile_phone_from_metadata",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792784307777,
+      "tag": "0003_product_diecast_fields",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792786213182,
+      "tag": "0004_trending_newsletter",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792786229032,
+      "tag": "0005_newsletter_rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792787376121,
+      "tag": "0006_newsletter_whatsapp",
+      "breakpoints": true
     }
   ]
 }

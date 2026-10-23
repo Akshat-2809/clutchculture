@@ -1,23 +1,352 @@
 @import "tailwindcss";
 
+/* Dark mode is class-based: <html class="dark">, toggled by ThemeToggle. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
- * Brand tokens. Placeholder values — replace with the client's design in Phase 1.
- * Use as Tailwind classes: bg-background, text-foreground, bg-brand, text-muted, font-sans, etc.
+ * Brand tokens (from the home page design).
+ * Use as Tailwind classes: bg-brand, text-ink, font-display, border-border, etc.
+ *
+ * `ink` flips in dark mode (main text, inverted buttons: bg-ink + text-background).
+ * `night` never flips — for sections that stay dark (hero, marquee, headers).
  */
 @theme {
   --color-background: #ffffff;
-  --color-foreground: #0a0a0a;
-  --color-brand: #0a0a0a;
-  --color-brand-foreground: #ffffff;
+  --color-foreground: #161616;
+  --color-ink: #161616;
+  --color-night: #161616;
+  --color-brand: #efcf6a;
+  --color-brand-dark: #e2bd4a;
+  --color-brand-foreground: #1e1803;
   --color-muted: #6b7280;
   --color-border: #e5e7eb;
   --color-sale: #dc2626;
+  --color-accent: #ff6929;
+  --color-input: #f5f5f7;
+  --color-input-border: #e7e7eb;
+  --color-placeholder: #757575;
 
-  --font-sans: var(--font-brand-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Product cards / product page */
+  --color-surface: #f3f3f3;
+  --color-price: #855639;
+  --color-save: #a3e1af;
+  --color-save-foreground: #3f7f46;
+  --color-in-stock: #2f8a3e;
+  /* Admin charts: validated (dataviz) for contrast on both light and dark surfaces. */
+  --color-chart: #e85d1c;
+  /* Electric blue for promo bands and the drop-alert poster (stays the same in dark mode). */
+  --color-electric: #2752ff;
+
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-rubik-dirt), var(--font-jost), sans-serif;
+  --font-headline: var(--font-jost), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --animate-marquee: marquee 60s linear infinite;
+  --animate-marquee-fast: marquee 28s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 34s linear infinite;
+  --animate-pulse-ring: pulse-ring 1.6s ease-out infinite;
+  --animate-glow-drift: glow-drift 6s ease-in-out infinite;
+  --animate-rise: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-wipe: wipe 1s cubic-bezier(0.65, 0, 0.35, 1) both;
+  --animate-slow-zoom: slow-zoom 12s ease-out both;
+  --animate-drift-a: drift-a 12s ease-in-out infinite;
+  --animate-drift-b: drift-b 10s ease-in-out infinite;
+  --animate-shake: shake 0.4s ease-in-out;
+  --animate-spin-in: spin-in 0.25s ease-out;
+  --animate-pop: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-ring: ring 0.5s ease-out forwards;
+  --animate-label-in: label-in 0.25s ease-out;
+  --animate-fade-in: fade-in 0.2s ease-out both;
+  --animate-slide-in-right: slide-in-right 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Badge / heart springing in. */
+  @keyframes pop {
+    0% {
+      transform: scale(0.3);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Ring bursting out of the heart when saved. */
+  @keyframes ring {
+    from {
+      opacity: 1;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.8);
+    }
+  }
+
+  /* Quick add label swap. */
+  @keyframes label-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes spin-in {
+    from {
+      opacity: 0;
+      transform: rotate(-90deg);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(0);
+    }
+  }
+  --animate-slide-in: slide-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  /* Soft glow blobs on the auth panel. */
+  @keyframes drift-a {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(60px, 40px);
+    }
+  }
+
+  @keyframes drift-b {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(-40px, -20px);
+    }
+  }
+
+  /* Wrong-password nudge. */
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-10px);
+    }
+    40% {
+      transform: translateX(10px);
+    }
+    60% {
+      transform: translateX(-6px);
+    }
+    80% {
+      transform: translateX(6px);
+    }
+  }
+
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Slanted promo bands on the home page. */
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgb(255 105 41 / 0.6);
+    }
+    100% {
+      box-shadow: 0 0 0 10px rgb(255 105 41 / 0);
+    }
+  }
+
+  /* F1 banner halftone glow. */
+  @keyframes glow-drift {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.08);
+    }
+  }
+
+  /* Line reveal: text slides up out of an overflow-hidden mask. */
+  @keyframes rise {
+    from {
+      transform: translateY(110%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Left-to-right reveal. Pair with a hidden initial clip-path on the element. */
+  @keyframes wipe {
+    /* Negative insets leave room for strokes that overhang the element's box. */
+    from {
+      clip-path: inset(-50% 100% -50% 0);
+    }
+    to {
+      clip-path: inset(-50% -5% -50% -5%);
+    }
+  }
+
+  @keyframes slow-zoom {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+}
+
+/* Fade up as the element scrolls into view. Browsers without scroll-driven
+   animations just play it once on load. */
+@utility reveal-on-scroll {
+  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @supports (animation-timeline: view()) {
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Dark theme: override the same tokens, so every utility follows automatically. */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --color-background: #0e0e11;
+    --color-foreground: #f2f2f3;
+    --color-ink: #f2f2f3;
+    --color-night: #050507;
+    --color-muted: #9a9aa5;
+    --color-border: #27272e;
+    --color-sale: #f87171;
+    --color-input: #1a1a1f;
+    --color-input-border: #2e2e36;
+    --color-placeholder: #7c7c86;
+    --color-surface: #18181d;
+    --color-price: #e0b088;
+    --color-save: #1f4d2a;
+    --color-save-foreground: #8fe0a0;
+    --color-in-stock: #4ccb68;
+  }
+}
+
+/* Background lives on <html> as well as <body>: Chromium (Chrome, Brave) can fail to
+   repaint a body background that propagates to the page canvas when the theme flips. */
+html,
+body {
+  background-color: var(--color-background);
 }
 
 body {
-  background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+}
+
+/*
+ * Yellow underline that grows from the left on hover/focus (navbar categories,
+ * footer links). Add `link-underline-active` to keep it fully drawn.
+ */
+@utility link-underline {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  &:hover::after,
+  &:focus-visible::after {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      transition: none;
+    }
+  }
+}
+
+@utility link-underline-active {
+  &::after {
+    transform: scaleX(1);
+  }
 }

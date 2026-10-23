@@ -8,7 +8,7 @@
 | Backend API | Node.js + Express + TypeScript | Render (Web Service) |
 | Database | PostgreSQL | Supabase |
 | ORM | Drizzle ORM (type-safe, migrations in repo) | — |
-| Auth | Supabase Auth (email/password + Google OAuth) | Supabase |
+| Auth | Supabase Auth — email + password only (no social login); phone optional at signup | Supabase |
 | File storage | Supabase Storage (product images) | Supabase |
 | Payments | Razorpay (India, INR) — UPI, cards, netbanking, wallets | — |
 | Emails | Resend (order confirmation, shipping, password reset) | — |
@@ -198,8 +198,8 @@ Products and Payments & Orders (the client's priorities) each get a dedicated ph
 - [x] API skeleton: env validation, Supabase JWT auth, requireAdmin, error handler, rate limits, `/health`, `/api/me`
 - [x] Drizzle schema (all tables) + migrations generated: `0000_init.sql`, `0001_supabase_setup.sql` (signup → profile trigger, RLS, `product-images` bucket)
 - [x] `.env.example` files for both apps
-- [ ] Create Supabase project, enable Auth providers (email + Google), fill `.env` files
-- [ ] Run migrations: `cd backend && npm run db:migrate`
+- [x] Create Supabase project (Singapore, ap-southeast-1), fill `.env` files
+- [x] Run migrations — verified: 17 tables, RLS on, signup trigger, bucket, ES256 auth end-to-end
 - [ ] Create Razorpay account in **test mode**, get test keys
 - [ ] Git init + GitHub → Vercel/Render preview deploys — *deferred, do when told*
 
@@ -233,7 +233,7 @@ Storefront
 
 ### Phase 3 — Cart & Auth (Days 12–14)
 - [ ] Zustand cart (guest, persisted) + CartDrawer + Cart page, stock re-validated on open
-- [ ] Supabase Auth: signup, login, Google, forgot password, phone number on profile
+- [x] Supabase Auth pages: /login, /signup (name, email, password, optional phone), /forgot-password, /reset-password, /auth/callback, email verification + resend
 - [ ] API auth middleware (verify Supabase JWT), `profiles` row on signup
 - [ ] Merge guest cart into user cart on login
 - [ ] Account: profile, addresses (Indian format, pincode validation), wishlist
