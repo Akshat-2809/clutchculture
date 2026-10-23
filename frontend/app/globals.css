@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/*
+ * Brand tokens. Placeholder values — replace with the client's design in Phase 1.
+ * Use as Tailwind classes: bg-background, text-foreground, bg-brand, text-muted, font-sans, etc.
+ */
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0a0a0a;
+  --color-brand: #0a0a0a;
+  --color-brand-foreground: #ffffff;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-sale: #dc2626;
+
+  --font-sans: var(--font-brand-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
