@@ -25,8 +25,13 @@ import { cn } from "@/lib/utils";
 import { selectCartCount, useCart } from "@/store/cart";
 import { useWishlist } from "@/store/wishlist";
 import { Logo } from "./Logo";
-import { SearchPalette } from "./SearchPalette";
+import dynamic from "next/dynamic";
 import { ThemeToggle } from "./ThemeToggle";
+
+// The ⌘K dialog is only downloaded the first time someone opens search.
+const SearchPalette = dynamic(() => import("./SearchPalette").then((m) => m.SearchPalette), {
+  ssr: false,
+});
 
 const iconButton =
   "relative flex size-10 items-center justify-center rounded-full text-ink transition hover:bg-input";
@@ -353,7 +358,7 @@ export function Navbar() {
         </nav>
       )}
 
-      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+      {searchOpen && <SearchPalette open onClose={() => setSearchOpen(false)} />}
     </header>
   );
 }

@@ -90,9 +90,9 @@ export function Hero() {
           src={HERO_IMAGE}
           alt=""
           fill
-          // LCP image: fetch first (Next 16 replaced `priority` with these).
-          loading="eager"
-          fetchPriority="high"
+          // The LCP image on every screen size: preload it from <head> so it starts
+          // before fonts and scripts (Next 16 docs: use instead of loading/fetchPriority).
+          preload
           sizes="100vw"
           // Anchored to the bottom so the car's wheels stay in frame; zoom grows from there too.
           className="-z-30 origin-[70%_100%] animate-slow-zoom object-cover object-[70%_100%] motion-reduce:animate-none"

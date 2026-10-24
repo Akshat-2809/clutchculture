@@ -28,10 +28,13 @@ const rubikDirt = localFont({
   preload: false,
 });
 
+// Only the decorative ticker bar uses it, so it isn't preloaded: it would compete
+// with the hero image for bandwidth on mobile. It swaps in a moment after load.
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   weight: "700",
   subsets: ["latin"],
+  preload: false,
 });
 
 export const metadata: Metadata = {

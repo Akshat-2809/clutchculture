@@ -50,29 +50,35 @@ function Band({
   );
 }
 
-/** Two crossing slanted bands scrolling in opposite directions. */
+/**
+ * Two stacked slanted bands (black over blue) scrolling in opposite directions.
+ * They share one tilt so neither covers the other's text on any screen width.
+ */
 export function SlantMarquee() {
   return (
     <section
       aria-label="What we stock"
-      className="group relative isolate my-10 overflow-hidden py-14 sm:my-14 sm:py-20"
+      className="group relative isolate my-6 overflow-hidden py-10 sm:my-10 sm:py-14"
     >
-      <Band
-        items={BACK}
-        animation="animate-marquee-reverse"
-        className="absolute inset-x-[-5%] top-1/2 -z-10 -translate-y-1/2 rotate-[2.5deg] bg-night"
-        textClass="font-headline text-2xl font-extrabold tracking-tight text-transparent uppercase italic [-webkit-text-stroke:1px_rgb(255_255_255/0.55)] sm:text-4xl"
-        separator={<span className="size-2 shrink-0 rotate-45 bg-brand" aria-hidden />}
-      />
-      <Band
-        items={FRONT}
-        animation="animate-marquee-fast"
-        className="relative -mx-[5%] -rotate-[2.5deg] bg-electric shadow-[0_18px_40px_-18px_rgb(39_82_255/0.8)]"
-        textClass="font-headline text-2xl font-extrabold tracking-tight text-white uppercase italic sm:text-4xl"
-        separator={
-          <X className="size-6 shrink-0 text-accent sm:size-8" strokeWidth={2.5} aria-hidden />
-        }
-      />
+      {/* Wider than the screen so the tilted ends never show a gap at the edges. */}
+      <div className="-mx-[6%] -rotate-[1.5deg] sm:-rotate-[2.5deg]">
+        <Band
+          items={BACK}
+          animation="animate-marquee-reverse"
+          className="bg-night"
+          textClass="font-headline text-xl font-extrabold tracking-tight text-transparent uppercase italic [-webkit-text-stroke:1px_rgb(255_255_255/0.85)] sm:text-3xl"
+          separator={<span className="size-2 shrink-0 rotate-45 bg-brand" aria-hidden />}
+        />
+        <Band
+          items={FRONT}
+          animation="animate-marquee-fast"
+          className="bg-electric shadow-[0_18px_40px_-18px_rgb(39_82_255/0.8)]"
+          textClass="font-headline text-2xl font-extrabold tracking-tight text-white uppercase italic sm:text-4xl"
+          separator={
+            <X className="size-6 shrink-0 text-accent sm:size-8" strokeWidth={2.5} aria-hidden />
+          }
+        />
+      </div>
     </section>
   );
 }
