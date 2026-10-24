@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import express, { Router } from "express";
+import sharp from "sharp";
 import { z } from "zod";
 import { sql } from "../../db/client.js";
 import { badRequest, notFound } from "../../lib/httpError.js";
@@ -209,7 +210,7 @@ adminProductsRouter.delete("/products/:id", async (req, res) => {
 
 // ---------- Images ----------
 
-const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" } as const;
+const ACCEPTED = ["image/jpeg", "image/png", "image/webp"];
 const storagePrefix = `/storage/v1/object/public/${PRODUCT_IMAGES_BUCKET}/`;
 
 async function removeStorageFiles(urls: string[]) {
@@ -219,17 +220,30 @@ async function removeStorageFiles(urls: string[]) {
 
 adminProductsRouter.post(
   "/products/:id/images",
-  express.raw({ type: Object.keys(EXT), limit: "5mb" }),
+  express.raw({ type: ACCEPTED, limit: "5mb" }),
   async (req, res) => {
-    const type = req.header("content-type") as keyof typeof EXT;
-    if (!EXT[type] || !Buffer.isBuffer(req.body) || !req.body.length) {
+    const type = req.header("content-type") ?? "";
+    if (!ACCEPTED.includes(type) || !Buffer.isBuffer(req.body) || !req.body.length) {
       throw badRequest("Upload a JPEG, PNG or WebP image (max 5 MB)");
     }
+    // Normalise every upload to a WebP no wider than 1200px (photos straight off a
+    // phone are often 4000px+ and several MB). sharp also rejects files that aren't
+    // really images, whatever their content-type says.
+    let webp: Buffer;
+    try {
+      webp = await sharp(req.body)
+        .rotate() // respect EXIF orientation from phone cameras
+        .resize({ width: 1200, height: 1200, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+    } catch {
+      throw badRequest("That file isn't a valid image");
+    }
     const p = await getAdminProduct(req.params.id);
-    const path = `${p.id}/${randomUUID()}.${EXT[type]}`;
+    const path = `${p.id}/${randomUUID()}.webp`;
     const { error } = await supabaseAdmin.storage
       .from(PRODUCT_IMAGES_BUCKET)
-      .upload(path, req.body, { contentType: type, cacheControl: "31536000" });
+      .upload(path, webp, { contentType: "image/webp", cacheControl: "31536000" });
     if (error) throw badRequest(`Upload failed: ${error.message}`);
     const { publicUrl } = supabaseAdmin.storage.from(PRODUCT_IMAGES_BUCKET).getPublicUrl(path).data;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,6 +18,7 @@ import { SubmitButton } from "./SubmitButton";
 
 export function LoginForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
   const {
@@ -36,6 +38,8 @@ export function LoginForm() {
       setShake(true);
       return;
     }
+    // The navbar only checks the session on load; tell it about the new login.
+    queryClient.invalidateQueries({ queryKey: ["me"] });
     router.replace(getNextParam());
     router.refresh();
   });

@@ -39,6 +39,8 @@
 
   --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-rubik-dirt), var(--font-jost), sans-serif;
+  /* Wordmark only: tiny preloaded subset, falls back to the full caps subset. */
+  --font-logo: var(--font-rubik-dirt-logo), var(--font-rubik-dirt), var(--font-jost), sans-serif;
   --font-headline: var(--font-jost), sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 

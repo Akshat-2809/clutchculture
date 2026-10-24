@@ -9,7 +9,7 @@ export function Logo({ className }: { className?: string }) {
       href="/"
       aria-label="Clutch Culture home"
       className={cn(
-        "font-display text-lg leading-none tracking-wide whitespace-nowrap text-ink sm:text-2xl lg:text-xl xl:text-2xl",
+        "font-logo text-lg leading-none tracking-wide whitespace-nowrap text-ink sm:text-2xl lg:text-xl xl:text-2xl",
         className,
       )}
     >

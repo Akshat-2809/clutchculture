@@ -93,7 +93,7 @@ async function ProductContent({ slug }: { slug: string }) {
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-          <div className="animate-fade-up motion-reduce:animate-none">
+          <div>
             <ProductGallery images={product.images} name={product.name}>
               {save && <SaveBadge percent={save} className="absolute top-4 left-4 text-base" />}
               <WishlistButton

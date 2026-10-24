@@ -1,6 +1,7 @@
 import type { ShippingAddress } from "../db/schema.js";
+import { isProd } from "../config/env.js";
 import { sql } from "../db/client.js";
-import { badRequest, conflict, notFound } from "../lib/httpError.js";
+import { badRequest, conflict, notFound, unavailable } from "../lib/httpError.js";
 import { ACTIVE, selectProducts } from "./catalog.js";
 import * as inventory from "./inventory.js";
 import type { StockLine } from "./inventory.js";
@@ -68,6 +69,12 @@ export type NewOrder = {
 };
 
 export async function createOrder(input: NewOrder) {
+  // Without Razorpay keys there's no way to pay. Development offers a simulated
+  // payment instead; production refuses before any stock is held.
+  if (!razorpayEnabled && isProd) {
+    throw unavailable("Online payments aren't available yet. Please try again soon.");
+  }
+
   // Merge duplicate lines.
   const qtyBySlug = new Map<string, number>();
   for (const { slug, qty } of input.items) qtyBySlug.set(slug, (qtyBySlug.get(slug) ?? 0) + qty);

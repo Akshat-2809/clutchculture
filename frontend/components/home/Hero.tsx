@@ -4,7 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 // Drop the licensed hero artwork into public/images/ and set the path here.
-const HERO_IMAGE: string | null = "/images/hero.webp";
+const HERO_IMAGE: string | null = "/images/hero-1920.webp";
 
 // Repeating wave for the underline under "GARAGE".
 const WAVE_PATH = `M0 8 Q 12.5 0 25 8 ${Array.from({ length: 11 }, (_, i) => `T ${50 + i * 25} 8`).join(" ")}`;
@@ -90,7 +90,9 @@ export function Hero() {
           src={HERO_IMAGE}
           alt=""
           fill
-          priority
+          // LCP image: fetch first (Next 16 replaced `priority` with these).
+          loading="eager"
+          fetchPriority="high"
           sizes="100vw"
           // Anchored to the bottom so the car's wheels stay in frame; zoom grows from there too.
           className="-z-30 origin-[70%_100%] animate-slow-zoom object-cover object-[70%_100%] motion-reduce:animate-none"

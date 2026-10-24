@@ -13,11 +13,12 @@ import {
   User,
   X,
 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { fallbackCollections } from "@/lib/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { loadSupabase } from "@/lib/supabase/lazy";
 import { useMe } from "@/lib/use-me";
 import { useCollections } from "@/lib/use-products";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,7 @@ function useClickOutside(onClose: () => void) {
 }
 
 function AccountMenu() {
+  const queryClient = useQueryClient();
   const { data: me } = useMe();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -104,7 +106,8 @@ function AccountMenu() {
           <button
             onClick={async () => {
               setOpen(false);
-              await createClient().auth.signOut();
+              await (await loadSupabase()).auth.signOut();
+              queryClient.setQueryData(["me"], null);
               router.push("/");
               router.refresh();
             }}
@@ -199,6 +202,7 @@ function CategoryBar({ collections }: { collections: { slug: string; name: strin
 }
 
 export function Navbar() {
+  const queryClient = useQueryClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const cartCount = useCart(selectCartCount);
@@ -334,7 +338,8 @@ export function Navbar() {
                 <button
                   onClick={async () => {
                     setMenuOpen(false);
-                    await createClient().auth.signOut();
+                    await (await loadSupabase()).auth.signOut();
+                    queryClient.setQueryData(["me"], null);
                     router.push("/");
                     router.refresh();
                   }}

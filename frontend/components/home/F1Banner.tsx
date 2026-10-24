@@ -25,7 +25,7 @@ export function F1Banner() {
         <div className="grid items-center gap-2 md:grid-cols-[1.15fr_1fr]">
           <div className="relative order-2 aspect-[2.2/1] md:order-1 md:aspect-auto md:h-[420px]">
             <Image
-              src="/images/promo/f1-car.jpg"
+              src="/images/promo/f1-car.webp"
               alt="A Formula 1 team car model"
               fill
               sizes="(min-width: 768px) 55vw, 100vw"

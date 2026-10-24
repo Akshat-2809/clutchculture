@@ -29,9 +29,15 @@ export function ProductGallery({
             src={src}
             alt={name}
             fill
-            priority
+            // LCP image: fetch first (Next 16 replaced `priority` with these).
+            loading="eager"
+            fetchPriority="high"
             sizes="(min-width: 1024px) 55vw, 100vw"
-            className="animate-fade-up object-cover motion-reduce:animate-none"
+            // No fade on first paint (it would delay LCP); fade only when switching photos.
+            className={cn(
+              "object-cover",
+              active > 0 && "animate-fade-up motion-reduce:animate-none",
+            )}
           />
         ) : (
           <ImageOff className="absolute inset-0 m-auto size-12 text-muted" strokeWidth={1.25} />

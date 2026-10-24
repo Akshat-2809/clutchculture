@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Heart, LayoutDashboard, Package } from "lucide-react";
@@ -13,6 +13,7 @@ import { useMe } from "@/lib/use-me";
 // Addresses arrive in Phase 3.
 export function AccountOverview() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const params = useSearchParams();
   const [signingOut, setSigningOut] = useState(false);
   const { data: me } = useMe();
@@ -25,6 +26,7 @@ export function AccountOverview() {
   async function signOut() {
     setSigningOut(true);
     await createClient().auth.signOut();
+    queryClient.setQueryData(["me"], null);
     router.replace("/");
     router.refresh();
   }

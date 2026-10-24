@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,6 +20,7 @@ import { SubmitButton } from "./SubmitButton";
 // (Authentication → Sign In / Providers → Email), so signUp returns a session.
 export function RegisterForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const {
     register,
@@ -52,6 +54,8 @@ export function RegisterForm() {
       setError("Account created, but we couldn't log you in. Please try logging in.");
       return;
     }
+    // The navbar only checks the session on load; tell it about the new login.
+    queryClient.invalidateQueries({ queryKey: ["me"] });
     router.replace(next);
     router.refresh();
   });

@@ -5,16 +5,19 @@ import type { Collection, Product } from "./catalog";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 /**
- * Cached GET against the API. Stock changes with every order, so entries are
- * short-lived (refreshed every 15s). That makes callers request-time
- * "dynamic holes": render them inside <Suspense>.
- * Returns null on 404 or when the API is unreachable.
+ * Cached GET against the API (stale-while-revalidate). Visitors always get the
+ * cached copy instantly; after 30s the next request refreshes it in the
+ * background, so stock shown on pages is at most ~30s old (checkout re-checks
+ * stock on the server). The long expiry means pages never wait on the API —
+ * important because Render's free plan can take ~50s to wake — and lets
+ * Next prerender pages like the home page as static HTML.
+ * Returns null on 404, timeout, or when the API is unreachable.
  */
 async function getJSON<T>(path: string): Promise<T | null> {
   "use cache";
-  cacheLife({ stale: 30, revalidate: 15, expire: 60 });
+  cacheLife({ stale: 60, revalidate: 30, expire: 60 * 60 * 24 * 7 });
   try {
-    const res = await fetch(`${API_URL}/api${path}`);
+    const res = await fetch(`${API_URL}/api${path}`, { signal: AbortSignal.timeout(10_000) });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {

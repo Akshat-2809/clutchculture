@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/client";
+import { hasSessionCookie, loadSupabase } from "@/lib/supabase/lazy";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -24,8 +24,9 @@ export async function api<T>(path: string, { body, auth, headers, ...init }: Api
   const finalHeaders = new Headers(headers);
   if (body !== undefined) finalHeaders.set("Content-Type", "application/json");
 
-  if (auth) {
-    const { data } = await createClient().auth.getSession();
+  // Only load supabase-js when a session exists (see lib/supabase/lazy.ts).
+  if (auth && hasSessionCookie()) {
+    const { data } = await (await loadSupabase()).auth.getSession();
     const token = data.session?.access_token;
     if (token) finalHeaders.set("Authorization", `Bearer ${token}`);
   }

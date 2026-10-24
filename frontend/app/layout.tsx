@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Jost, Rubik_Dirt } from "next/font/google";
+import { JetBrains_Mono, Jost } from "next/font/google";
+import localFont from "next/font/local";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -9,10 +10,22 @@ const jost = Jost({
   subsets: ["latin"],
 });
 
-const rubikDirt = Rubik_Dirt({
+// Rubik Dirt's textured glyphs are very heavy (Google's latin file is ~300 KB),
+// so it's self-hosted as two subsets of the same font:
+// - logo: only the letters in "CLUTCHCULTURE" (~22 KB), preloaded for every page;
+// - caps: A–Z, digits and punctuation for display headings, fetched only when used.
+// Regenerate with pyftsubset if the wordmark text changes.
+const rubikDirtLogo = localFont({
+  src: "./fonts/rubik-dirt-logo.woff2",
+  variable: "--font-rubik-dirt-logo",
+  display: "swap",
+});
+
+const rubikDirt = localFont({
+  src: "./fonts/rubik-dirt-caps.woff2",
   variable: "--font-rubik-dirt",
-  weight: "400",
-  subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -40,7 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en-IN"
       // The theme script adds the "dark" class before React hydrates.
       suppressHydrationWarning
-      className={`${jost.variable} ${rubikDirt.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${jost.variable} ${rubikDirt.variable} ${rubikDirtLogo.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

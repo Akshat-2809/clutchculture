@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { api } from "./api";
-import { createClient } from "./supabase/client";
+import { hasSessionCookie, loadSupabase } from "./supabase/lazy";
 
 export type Me = {
   id: string;
@@ -17,19 +17,32 @@ export type Me = {
 export function useMe() {
   const queryClient = useQueryClient();
 
+  // Logged-out visitors never load supabase-js; login/register/logout update
+  // ["me"] themselves. For a logged-in visitor, keep it in sync with token changes.
   useEffect(() => {
-    const { data } = createClient().auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-        queryClient.invalidateQueries({ queryKey: ["me"] });
-      }
+    if (!hasSessionCookie()) return;
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+    loadSupabase().then((sb) => {
+      if (cancelled) return;
+      const { data } = sb.auth.onAuthStateChange((event) => {
+        if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+          queryClient.invalidateQueries({ queryKey: ["me"] });
+        }
+      });
+      unsubscribe = () => data.subscription.unsubscribe();
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, [queryClient]);
 
   return useQuery({
     queryKey: ["me"],
     queryFn: async () => {
-      const { data } = await createClient().auth.getSession();
+      if (!hasSessionCookie()) return null;
+      const { data } = await (await loadSupabase()).auth.getSession();
       if (!data.session) return null;
       return api<Me>("/me", { auth: true });
     },
